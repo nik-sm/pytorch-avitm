@@ -5,6 +5,8 @@ import sys, os
 from collections import OrderedDict
 from copy import deepcopy
 from time import time
+import matplotlib
+matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
 import pickle
 
@@ -24,7 +26,7 @@ class VAE(object):
         self.transfer_fct = transfer_fct
         self.learning_rate = learning_rate
         self.batch_size = batch_size
-        print 'Learning Rate:', self.learning_rate
+        print('Learning Rate:', self.learning_rate)
 
         # tf Graph input
         self.x = tf.placeholder(tf.float32, [None, network_architecture["n_input"]], name='input')
@@ -41,9 +43,13 @@ class VAE(object):
         with tf.name_scope('cost'):
             self._create_loss_optimizer()
 
-        init = tf.initialize_all_variables()
+        #init = tf.initialize_all_variables()
+        init = tf.global_variables_initializer()
+
 
         self.sess = tf.InteractiveSession()
+        # TF logging to see whether GPU devices are detected
+        #self.sess = tf.InteractiveSession(config=tf.ConfigProto(log_device_placement=True))
         self.sess.run(init)
 
     def _create_network(self):
@@ -78,7 +84,7 @@ class VAE(object):
 
         self.x_reconstr_mean = tf.nn.softmax(slim.layers.batch_norm(decoded, scope='BN_decoder'))                    # softmax(bn(50->1995))
 
-        print self.x_reconstr_mean
+        print(self.x_reconstr_mean)
 
     def _create_loss_optimizer(self):
 
