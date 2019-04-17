@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import pandas as pd
 import numpy as np
 import tensorflow as tf
 import itertools,time
@@ -28,6 +29,17 @@ vocab_size=len(vocab)
 print('Converting data to one-hot representation')
 data_tr = np.array([onehot(doc.astype('int'),vocab_size) for doc in data_tr if np.sum(doc)!=0])
 data_te = np.array([onehot(doc.astype('int'),vocab_size) for doc in data_te if np.sum(doc)!=0])
+
+# TODO
+# SKIP DIRECTLY TO BAG-OF-WORDS INPUT
+all_data = pd.read_pickle('data/music/bag_of_words.pickle')
+no_index = all_data.drop(all_data.columns[0], axis=1) # Drop the song index for this unsupervised training
+
+# Save 1% for evaluating perplexity
+msk = np.random.rand(len(all_data)) < 0.99
+data_tr = all_data[msk].values
+data_te = all_data[~msk].values
+
 #--------------print the data dimentions--------------------------
 print('Data Loaded')
 print('Dim Training Data',data_tr.shape)
